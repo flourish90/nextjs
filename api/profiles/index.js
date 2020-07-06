@@ -1,20 +1,22 @@
-const mysql = require('serverless-mysql')
+const db = require('../../lib/db')
+const escape = require('sql-template-strings')
 
-const db = mysql({
-  config: {
-    host: process.env.MYSQL_HOST,
-    database: process.env.MYSQL_DATABASE,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD
-  }
-})
-
-exports.query = async query => {
-  try {
-    const results = await db.query(query)
-    await db.end()
-    return results
-  } catch (error) {
-    return { error }
-  }
+module.exports = async (req, res) => {
+  let page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 9
+  if (page < 1) page = 1
+  const profiles = await db.query(escape`
+      SELECT *
+      FROM profiles
+      ORDER BY id
+      LIMIT ${(page - 1) * limit}, ${limit}
+    `)
+  const count = await db.query(escape`
+      SELECT COUNT(*)
+      AS profilesCount
+      FROM profiles
+    `)
+  const { profilesCount } = count[0]
+  const pageCount = Math.ceil(profilesCount / limit)
+  res.status(200).json({ profiles, pageCount, page })
 }
