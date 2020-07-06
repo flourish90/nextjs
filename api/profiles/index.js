@@ -7,13 +7,13 @@ module.exports = async (req, res) => {
   if (page < 1) page = 1
   const profiles = await db.query(escape`
       SELECT *
-      FROM profiles
+      FROM gautschfest
       ORDER BY id
       LIMIT ${(page - 1) * limit}, ${limit}
     `)
   const count = await db.query(escape`
       SELECT COUNT(*)
-      AS profilesCount
+      AS gautschfest
       FROM profiles
     `)
   const { profilesCount } = count[0]
