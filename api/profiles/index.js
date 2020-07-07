@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   const count = await db.query(escape`
       SELECT COUNT(*)
       AS profilesCount
-      FROM gautschfest
+      FROM gautschfest-FEHLERHIERHIERHIER
     `)
   const { profilesCount } = count[0]
   const pageCount = Math.ceil(profilesCount / limit)
